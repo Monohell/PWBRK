@@ -1,0 +1,71 @@
+Option Explicit
+
+Sub TestTheBAR()
+
+'Declare Sub Level Variables and Objects
+Dim Counter As Long
+Dim TotalCount As Long
+Dim SomeRange As Range
+Dim EachCell As Range
+Dim CounterBar As Integer
+Dim a As Integer
+Dim b As Integer
+Dim c As Integer
+Dim TotalActions As Long
+
+'Initialize the Variables and Objects
+CounterBar = 1
+a = 32
+b = 32
+c = 32
+TotalActions = 884736
+
+'Declare the ProgressBar Object
+Dim MyProgressbar As ProgressBar
+'Initialize a New Instance of the Progressbars
+Set MyProgressbar = New ProgressBar
+
+'Set all the Properties that need to be set before the
+'ProgresBar is Shown
+    With MyProgressbar
+        .Title = "Attempting Passwords"
+        .ExcelStatusBar = True
+        .StartColour = rgbCrimson
+        .EndColour = rgbCrimson
+        .TotalActions = TotalActions
+        .Caption = "Attempting Password " & CounterBar & " of " & TotalActions
+        .StartUpPosition = 0
+        .Left = Application.Left + (0.5 * Application.Width) - (0.5 * .Width)
+        .Top = Application.Top + (0.5 * Application.Height) - ((1.5 * .Height) + 10)
+    End With
+
+'Show the Bar
+MyProgressbar.ShowBar 'Critical Line
+
+On Error Resume Next
+
+Do Until a = 127
+    Do Until b = 127
+        Do Until c = 127
+        Worksheets(3).Unprotect (Chr(a) & Chr(b) & Chr(c))
+        Debug.Print Chr(a) & Chr(b) & Chr(c)
+        c = c + 1
+        CounterBar = CounterBar + 1
+        MyProgressbar.NextAction "Attempting Password " & CounterBar & " of " & TotalActions
+        Loop
+    c = 32
+    b = b + 1
+    MyProgressbar.NextAction "Attempting Password " & CounterBar & " of " & TotalActions
+    Loop
+    b = 32
+Debug.Print Chr(a) & Chr(b)
+If ActiveSheet.ProtectContents = False Then
+    MsgBox "Password is: " & Chr(a) & Chr(b) & Chr(c)
+    MyProgressbar.Terminate
+    Exit Sub
+End If
+a = a + 1
+MyProgressbar.NextAction "Attempting Password " & CounterBar & " of " & TotalActions
+
+Loop
+End Sub
